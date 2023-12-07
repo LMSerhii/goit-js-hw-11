@@ -1,6 +1,6 @@
 .gallery {
     display: flex;
-    gap: 15px;
+    gap: 20px;
     flex-wrap: wrap;
     .photo-card{
         img {
@@ -14,7 +14,10 @@
         .info {
             display: flex;
             gap: 10px;
-            justify-content: center;
+            justify-content: space-around;
+
+            color:rgb(224, 230, 230);
+            font-size: 14px;
 
             p {
                 text-align: center;
