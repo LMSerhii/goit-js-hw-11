@@ -8,46 +8,74 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 const refs = {
   form: document.querySelector('#search-form'),
   gallery: document.querySelector('.gallery'),
+  moreBtn: document.querySelector('.load-more'),
 };
 
+let pagination = 0;
+let queryText = null;
+let totalElement = 0;
+let totalHits = 0;
+
 refs.form.addEventListener('submit', onFormSubmit);
+refs.moreBtn.addEventListener('click', loadMore);
 
 function onFormSubmit(evt) {
   evt.preventDefault();
-  // refs.gallery.innerHTML = `<span class="loader"></span>`;
-  renderHTML(evt.target.elements.searchQuery.value);
+  refs.gallery.innerHTML = '';
+  queryText = evt.target.elements.searchQuery.value;
+  pagination = 1;
+  renderHTML();
 }
 
-function createMarkup(arrey) {
+function validationData(arrey) {
   if (!arrey.length) {
     Notify.warning(
       'Sorry, there are no images matching your search query. Please try again.'
     );
+    return false;
+  }
+
+  return true;
+}
+
+function createMarkup(arrey) {
+  if (!validationData(arrey)) {
     return '';
   }
+
   return arrey
-    .map(el => {
-      return `
+    .map(
+      ({
+        largeImageURL,
+        webformatURL,
+        tags,
+        likes,
+        views,
+        comments,
+        downloads,
+      }) => {
+        return `
     <div class="photo-card">
-      <a href="${el.largeImageURL}">
-        <img src="${el.webformatURL}" alt="${el.tags}" width="300" loading="lazy" />
+      <a href="${largeImageURL}">
+        <img src="${webformatURL}" alt="${tags}" width="300" loading="lazy" />
       </a>
       <div class="info">
         <p class="info-item">
-          <b>Likes</b>${el.likes}
+          <b>Likes</b>${likes}
         </p>
         <p class="info-item">
-          <b>Views</b>${el.views}
+          <b>Views</b>${views}
         </p>
         <p class="info-item">
-          <b>Comments</b>${el.comments}
+          <b>Comments</b>${comments}
         </p>
         <p class="info-item">
-          <b>Downloads</b>${el.downloads}
+          <b>Downloads</b>${downloads}
         </p>
       </div>
     </div>`;
-    })
+      }
+    )
     .join('');
 }
 
@@ -55,6 +83,7 @@ function createLightbox() {
   const options = {
     captionsData: 'alt',
     captionPosition: 'bottom',
+    overla: true,
     captionDelay: 250,
     enableKeyboard: true,
     docClose: true,
@@ -66,36 +95,65 @@ function createLightbox() {
   gallery.on('error.simplelightbox', e => {
     Notify.warning('Page not found !!!');
   });
+
+  gallery.refresh();
 }
 
-async function renderHTML(value) {
-  const data = await getData(value);
-  refs.gallery.innerHTML = createMarkup(data.hits);
+async function renderHTML() {
+  refs.moreBtn.classList.remove('is-active');
+
+  const data = await getData();
+
+  if (!validationData(data.hits)) {
+    return;
+  }
+
+  refs.gallery.insertAdjacentHTML('beforeend', createMarkup(data.hits));
+  refs.moreBtn.classList.add('is-active');
   createLightbox();
+
+  checkTotalEl();
 }
 
-async function getData(value) {
+function checkTotalEl() {
+  if (totalElement >= totalHits) {
+    Notify.warning(
+      "We're sorry, but you've reached the end of search results."
+    );
+    refs.moreBtn.classList.remove('is-active');
+  }
+}
+
+async function getData() {
   try {
-    const response = await fetchImages(value);
+    const response = await fetchImages();
+    totalHits = response.data.totalHits;
+    totalElement += 200;
     return response.data;
   } catch (error) {
     Notify.failure(error.message);
   }
 }
 
-async function fetchImages(searchQuery) {
+async function fetchImages() {
   const query = {
     url: common.BASE_URL,
     method: 'GET',
     params: {
       key: common.API_KEY,
-      q: searchQuery,
+      q: queryText,
       image_type: 'photo',
       orientation: 'horizontal',
       safesearch: true,
+      page: pagination,
+      per_page: 200,
     },
   };
 
-  const response = await axios(query);
-  return response;
+  return await axios(query);
+}
+
+function loadMore() {
+  pagination += 1;
+  renderHTML();
 }
