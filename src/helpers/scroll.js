@@ -1,4 +1,3 @@
-import OnlyScrollbar from 'only-scrollbar';
 import { refs } from '../variables/referenses';
 
 const scroll = () => {
