@@ -3,7 +3,8 @@ import { activeElement, notActiveElement } from './active';
 import { getData } from './getData';
 import { validationData, checkTotalEl } from './validators';
 import { createMarkup } from './createMarkup';
-import { createLightbox } from './createLightBox';
+import { createSlider } from './lightBox';
+
 import { gv } from '../variables/globalVariables';
 import { scroll } from './scroll';
 
@@ -23,9 +24,7 @@ const renderHTML = async () => {
   }
 
   activeElement();
-
-  createLightbox();
-
+  createSlider();
   checkTotalEl(gv.totalElement, gv.totalHits);
 };
 

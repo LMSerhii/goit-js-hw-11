@@ -2,7 +2,7 @@ import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import { Notify } from 'notiflix';
 
-const createLightbox = () => {
+const createSlider = () => {
   const options = {
     captionsData: 'alt',
     captionPosition: 'bottom',
@@ -22,4 +22,4 @@ const createLightbox = () => {
   gallery.refresh();
 };
 
-export { createLightbox };
+export { createSlider };
