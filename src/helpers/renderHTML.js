@@ -3,7 +3,7 @@ import { activeElement, notActiveElement } from './active';
 import { getData } from './getData';
 import { validationData, checkTotalEl } from './validators';
 import { createMarkup } from './createMarkup';
-import { createLightbox } from './сreateLightbox';
+import { createLightbox } from './createLightBox';
 import { gv } from '../variables/globalVariables';
 import { scroll } from './scroll';
 
