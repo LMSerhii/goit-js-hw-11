@@ -3,6 +3,7 @@ const gv = {
   queryText: null,
   totalElement: 0,
   totalHits: 0,
+  per_page: 40,
 };
 
 export { gv };

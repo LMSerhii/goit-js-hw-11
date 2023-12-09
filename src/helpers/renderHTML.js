@@ -3,8 +3,9 @@ import { activeElement, notActiveElement } from './active';
 import { getData } from './getData';
 import { validationData, checkTotalEl } from './validators';
 import { createMarkup } from './createMarkup';
-import { createLightbox } from './greateLightbox';
+import { createLightbox } from './сreateLightbox';
 import { gv } from '../variables/globalVariables';
+import { scroll } from './scroll';
 
 const renderHTML = async () => {
   notActiveElement();
@@ -16,6 +17,10 @@ const renderHTML = async () => {
   }
 
   refs.gallery.insertAdjacentHTML('beforeend', createMarkup(data.hits));
+
+  if (refs.gallery.children.length > gv.per_page) {
+    scroll();
+  }
 
   activeElement();
 
